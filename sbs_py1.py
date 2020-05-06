@@ -23,3 +23,4 @@ final_clip.write_videofile("output_benchmark.mp4", codec='libx264', audio_codec=
 video_clip.close()
 new_clip.close()
 final_clip.close()
+
