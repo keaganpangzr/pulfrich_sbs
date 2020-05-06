@@ -1,0 +1,57 @@
+## 2D to 3D Realtime Video Conversion Avisynth script v0.3b
+## Made by Anton Belev at 3D Vision Blog
+## http://www.3dvision-blog.com
+## Additionally extended by Martin Haverland at audiomh.de for quality resize
+## and different output modes including interlaced format for use in non-3d specific players e.g. windows media player.
+
+
+## Open the video file for conversion, change the video file name
+video2d = DirectShowSource("Video.avi")
+
+
+
+## Convert to RGB32 to avoid the width restrictions
+video2d = ConvertToRGB32(video2d)
+
+
+## Get video width/height and set the frame stretch factor
+## Lower the value 100 to increase frame stretch, may introduce ghosting
+videoW = width(video2d)
+videoH = height(video2d)
+
+ResW = videoW + (videoW / 100) # ResW = 1.01 * videoW
+CropW = (ResW - videoW) / 2
+
+
+## Create variables for left and right frame with one frame difference
+## This is the Plufrich-like simulation that creates illusion of depth from movement
+f1 = video2d #f1 is right frame
+f2 = DeleteFrame(video2d, 0) #f2 is left frame that lags the right by one frame
+
+
+## Stretch the right frame to further the depth effect
+f1 = LanczosResize(f1, ResW, videoH) # args-> (clip, target_width, target_height), resize right frame by 1.01 width and original height
+f1 = Crop(f1, 0, 0, videoW, videoH) #crop right frame, setting width and height back to original
+
+## Stretch the left frame to further the depth effect
+f2 = LanczosResize(f2, ResW, videoH)
+f2 = Crop(f2, CropW, 0, videoW, videoH) 
+
+
+##Crop(clip clip, int left, int top, int width, int height [, bool align ] )
+##Crop(clip clip, int left, int top, int -right, int -bottom [, bool align ] )
+
+
+## Output the two video frames in a side-by-side / parallel format
+## Use this as a default for playing back on 3D Vision (Side by Side L/R)
+StackHorizontal(f2, f1)
+
+
+Summary of steps:
+
+1. Lag left by one frame
+2. Edit right -> resize width to 101% then crop back to original height and width
+3. Edit left -> resize width to 101%, then crop left by 0.005 * original width AND back to original height and width
+
+cropw = (1.01 * original_width - original width) /2 = 0.005 * original width
+

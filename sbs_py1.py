@@ -6,8 +6,8 @@ from moviepy.editor import VideoFileClip, clips_array, vfx
 video_clip = VideoFileClip("input.mp4", audio=True)
 new_clip = VideoFileClip("input.mp4", audio=False)
 
-#first_frame_marker = (1/video_clip.fps)
-first_frame_marker = 0
+first_frame_marker = (1/video_clip.fps)
+
 
 #find duration up to timestamp of last frame
 #last_frame_marker = (video_clip.duration - 1/video_clip.fps)
